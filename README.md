@@ -1,8 +1,8 @@
 ## Description
 
-C Standard https://en.wikipedia.org/wiki/ANSI_C
-Following Manual https://man.archlinux.org/man/tcp.7
-Evolution of HTTP https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP
+C Standard https://en.wikipedia.org/wiki/ANSI_C <br />
+Following Manual https://man.archlinux.org/man/tcp.7 <br />
+Evolution of HTTP https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Evolution_of_HTTP <br />
 
 ## How to
 
