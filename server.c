@@ -24,6 +24,16 @@ typedef enum
     HTTP_RESULT_INTERNAL_SERVER_ERR,
 } http_result;
 
+typedef struct
+{
+    // string_view *splits;
+    size_t count;
+} string_splits;
+
+static string_splits split_string(const char *str, size_t len, char split_by) {
+    //
+};
+
 http_req_line
 http_req_line_init()
 {
