@@ -8,6 +8,45 @@
 #include <unistd.h>
 #include <stdbool.h>
 
+const char *CRLF = "\r\n";
+const char *SP = " ";
+
+typedef struct
+{
+    char *method;
+    char *uri;
+    char *version;
+} http_req_line;
+
+typedef enum
+{
+    HTTP_RESULT_OK,
+    HTTP_RESULT_INTERNAL_SERVER_ERR,
+} http_result;
+
+http_req_line
+http_req_line_init()
+{
+    http_req_line line;
+    line.method = NULL;
+    line.uri = NULL;
+    line.version = NULL;
+    return line;
+}
+
+http_result parse_request_line(http_req_line *req_line, const char *buf, size_t len)
+{
+    if (!buf || !req_line)
+    {
+        return HTTP_RESULT_INTERNAL_SERVER_ERR;
+    }
+
+    req_line->method = "GET";
+    req_line->version = "HTTP/1.1";
+
+    return HTTP_RESULT_OK;
+}
+
 int handle_client(int client_socket)
 {
     ssize_t n = 0;
@@ -111,7 +150,7 @@ int main(void)
 
         if (rc < 0)
         {
-            // Do not care for now
+            // Do not care for now.
         }
     }
 
