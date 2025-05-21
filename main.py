@@ -3,7 +3,7 @@
 # - Display the current game state object
 
 import pygame as p
-from engine import GameState
+from engine import GameState, Move
 
 WIDTH = 512
 HEIGHT = 512
@@ -13,7 +13,7 @@ MAX_FPS = 15
 IMAGES = {}
 
 '''
-Initialize a global dictionary of images, called only once.
+Initialize a global dictionary of images, called only once
 '''
 def load_images():
     pieces = [
@@ -29,7 +29,7 @@ def load_images():
 
 
 '''
-Main driver for handling the user input and updating the graphics.
+Main driver for handling the user input and updating the graphics
 '''
 def main():
     p.init()
@@ -44,10 +44,43 @@ def main():
 
     running = True
 
+    # Keep track of clicked square in a tuple (row, col)
+    square_selected = () 
+
+    # Keep track of both player clicks in two tuples like [(6, 4), (4, 4)]
+    player_clicks = []
+
     while running:
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+            elif e.type == p.MOUSEBUTTONDOWN:
+
+                # x, y location of the mouse
+                location = p.mouse.get_pos()
+                row = location[1] // SQ_SIZE
+                col = location[0] // SQ_SIZE
+
+                # If user clicked same square twice, treat it as undo
+                if square_selected == (row, col):
+                    # Undo selection
+                    square_selected = ()
+                    # Reset player clicks
+                    player_clicks = []
+                else:
+                    square_selected = (row, col)
+                    player_clicks.append(square_selected)
+
+                # Was that the user second click? Now we want to register the move
+                if len(player_clicks) == 2:
+                    move = Move(player_clicks[0], player_clicks[1], gs.board)
+                    print(move.get_chess_notation())
+                    gs.make_move(move)
+
+                    # Resets in order to enable next moves
+                    square_selected = ()
+                    player_clicks = []
+
         
         draw_game_state(screen, gs)
         clock.tick(MAX_FPS)
