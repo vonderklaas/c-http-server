@@ -70,7 +70,7 @@ def main():
                 else:
                     square_selected = (row, col)
                     player_clicks.append(square_selected)
-
+    
                 # Was that the user second click? Now we want to register the move
                 if len(player_clicks) == 2:
                     move = Move(player_clicks[0], player_clicks[1], gs.board)
