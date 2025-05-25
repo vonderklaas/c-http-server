@@ -1,7 +1,10 @@
+from typing import NewType
+
 # Engine File
 # - Store information about current state
 # - Determine the valid moves at the current state
 # - Keep the move log
+
 
 class GameState:
     def __init__(self):
@@ -29,10 +32,16 @@ class GameState:
 
         self.white_to_move = True
         self.move_log = []
+        self.white_king_location = (7, 4)
+        self.black_king_location = (0, 4)
+
+        #
+        self.check_mate = False
+        self.stale_mate = False
 
     '''
     Takes a move and executes it
-    Note: Will not work for castling, pawn promotion, and en-passant 
+    Note: Will not work for castling, pawn promotion, and en-passant
     '''
 
     def make_move(self, move):
@@ -47,6 +56,12 @@ class GameState:
 
         # Switch terms / swap players
         self.white_to_move = not self.white_to_move
+
+        # Update king location
+        if move.piece_moved == "wK":
+            self.white_king_location = (move.end_row, move.end_column)
+        if move.piece_moved == "bK":
+            self.black_king_location = (move.end_row, move.end_column)
 
     '''
     Undo a list move
@@ -64,14 +79,60 @@ class GameState:
             # Switch terms / swap players
             self.white_to_move = not self.white_to_move
 
+            # Update king location
+            if move.piece_moved == "wK":
+                self.white_king_location = (move.start_row, move.start_column)
+            if move.piece_moved == "bK":
+                self.black_king_location = (move.start_row, move.start_column)
+
     '''
     All moves considering checks
     '''
 
     def get_valid_moves(self):
 
-        # Note: For now we do no care about checks, will come back later and fix this
-        return self.get_all_possible_moves()
+        # 1. Generate all possible moves
+        moves = self.get_all_possible_moves()
+        # 2. For each move, make the move
+        for i in range(len(moves) - 1, -1, -1):
+            self.make_move(moves[i])
+            # 3. Generate all opponents move
+
+            # 4. For each of those moves, see if they attack your king
+            self.white_to_move = not self.white_to_move
+            if self.in_check():
+                moves.remove(moves[i])
+
+            self.white_to_move = not self.white_to_move
+            self.undo_move()
+        if len(moves) == 0:  # Either checkmate or stalemate
+            if self.in_check():
+                self.check_mate = True
+            else:
+                self.stale_mate = True
+        else:
+            self.check_mate = False
+            self.stale_mate = False
+        # 5. If they do, it is not a valid move
+        return moves
+
+    def in_check(self):
+        if self.white_to_move:
+            return self.square_under_attack(self.white_king_location[0], self.white_king_location[1])
+        else:
+            return self.square_under_attack(self.black_king_location[0], self.black_king_location[1])
+
+    def square_under_attack(self, row, column):
+        # Switch to opponent moves
+        self.white_to_move = not self.white_to_move
+        opp_moves = self.get_all_possible_moves()
+        self.white_to_move = not self.white_to_move
+        for move in opp_moves:
+            # If square is under attack
+            if move.end_row == row and move.end_column == column:
+                # Switch the turns
+                return True
+        return False
 
     '''
     All moves without considering checks
@@ -329,7 +390,6 @@ class Move():
         # Note: Generate unique ID for each move, like a simple hash function
         self.moveID = (self.start_row, self.start_column,
                        self.end_row, self.end_column)
-        print("moveID: ", self.moveID)
 
     '''
     Overriding the equals method
