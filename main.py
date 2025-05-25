@@ -18,10 +18,12 @@ IMAGES = {}
 
 
 def load_images():
-    pieces = [
-        "bp", "bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR",
-        "wp", "wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"
-    ]
+    # pieces = [
+    #     "bp", "bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR",
+    #     "wp", "wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"
+    # ]
+    pieces = ["bp", "bR", "bN", "bB", "bQ",
+              "bK", "wp", "wR", "wN", "wB", "wQ", "wK"]
 
     # We can access an image now by calling "IMAGES["wp"]"
     for piece in pieces:
@@ -90,12 +92,13 @@ def main():
                     if move in valid_moves:
                         gs.make_move(move)
                         move_made = True
+                        # Resets in order to enable next moves
+                        square_selected = ()
+                        player_clicks = []
                     else:
                         print(f"Invalid move attempt")
+                        player_clicks = [square_selected]
 
-                    # Resets in order to enable next moves
-                    square_selected = ()
-                    player_clicks = []
             # Key handlers
             elif e.type == p.KEYDOWN:
                 # Undo a move if Z is pressed
@@ -111,9 +114,18 @@ def main():
             valid_moves = gs.get_valid_moves()
             move_made = False
 
-        draw_game_state(screen, gs)
+        draw_game_state(screen, gs, square_selected)
         clock.tick(MAX_FPS)
         p.display.flip()
+
+
+def highlight_square(screen, square_selected):
+    if square_selected != ():
+        s = p.Surface((SQ_SIZE, SQ_SIZE))
+        s.set_alpha(100)  # 0 is transparent, 255 is opaque
+        s.fill(p.Color("blue"))  # Or use "yellow", "green", etc.
+        screen.blit(s, (square_selected[1] *
+                    SQ_SIZE, square_selected[0] * SQ_SIZE))
 
 
 '''
@@ -121,12 +133,15 @@ Function responsible for all graphics to draw board, pieces for current game sta
 '''
 
 
-def draw_game_state(screen, gs):
+def draw_game_state(screen, gs, square_selected):
 
     # Note: Order matters!
 
     # Draw squares on the board
     draw_board(screen)
+
+    # highlight
+    highlight_square(screen, square_selected)  # <- Add thi
 
     # Draw pieces on top of the squares
     draw_pieces(screen, gs.board)
