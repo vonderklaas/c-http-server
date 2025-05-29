@@ -1,5 +1,7 @@
 ### UI
 
+![DEMO](https://github.com/vonderklaas/python-chess-engine/blob/main/board_demo.png?raw=true)
+
 ### About
 
 This is a Python-based chess engine that allows users to play against a computer opponent.
