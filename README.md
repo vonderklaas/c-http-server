@@ -9,7 +9,7 @@ It also includes a GUI with valid move visualization, sounds and a move log.
 ### How to run?
 
 ```bash
-git clone <REPO URL>
+git clone https://github.com/vonderklaas/python-chess-engine.git
 ```
 
 ```bash
